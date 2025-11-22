@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interview Practice</title>
+  <link rel="stylesheet" href="interview.css">
+</head>
+<body>
+  <div class="container">
+    <div class="interview-box">
+      <h1>Interview Practice Time!</h1>
+      <p class="subtitle">Answer this question before continuing to your destination</p>
+
+      <div id="questionContainer" class="question-container">
+        <div class="question-number">Question <span id="currentQuestion">1</span> of <span id="totalQuestions">1</span></div>
+        <div id="question" class="question"></div>
+      </div>
+
+      <div class="recording-section">
+        <button id="recordBtn" class="record-btn">
+          <svg id="micIcon" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/>
+            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+            <line x1="12" y1="19" x2="12" y2="23"/>
+            <line x1="8" y1="23" x2="16" y2="23"/>
+          </svg>
+          <span id="recordText">Start Recording</span>
+        </button>
+
+        <div id="timer" class="timer">00:00</div>
+
+        <div id="statusMessage" class="status-message"></div>
+      </div>
+
+      <div id="transcriptionSection" class="transcription-section" style="display: none;">
+        <h3>Your Response:</h3>
+        <div id="transcription" class="transcription"></div>
+        <button id="nextBtn" class="next-btn">Next Question</button>
+        <button id="completeBtn" class="complete-btn" style="display: none;">Submit & Continue</button>
+      </div>
+
+      <div id="loadingSection" class="loading-section" style="display: none;">
+        <div class="spinner"></div>
+        <p id="loadingText">Processing...</p>
+      </div>
+
+      <div id="actionsSection" class="actions-section" style="display: none;">
+        <div class="button-group">
+          <button id="continueBtn" class="primary-action-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="9 18 15 12 9 6"></polyline>
+            </svg>
+            <span id="continueText">Continue to Site</span>
+          </button>
+          <button id="viewAnalyticsBtn" class="secondary-action-btn">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="20" x2="12" y2="10"></line>
+              <line x1="18" y1="20" x2="18" y2="4"></line>
+              <line x1="6" y1="20" x2="6" y2="16"></line>
+            </svg>
+            View Interview Analytics
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="interview.js"></script>
+</body>
+</html>

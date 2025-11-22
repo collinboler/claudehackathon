@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interview Practice - History</title>
+  <link rel="stylesheet" href="history.css">
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Past Interviews</h1>
+      <div class="stats">
+        <div class="stat-item">
+          <span class="stat-label">Total:</span>
+          <span class="stat-value" id="totalCount">0</span>
+        </div>
+        <div class="stat-item">
+          <span class="stat-label">Avg Grade:</span>
+          <span class="stat-value" id="avgGrade">-</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <input type="text" id="searchInput" class="search-input" placeholder="Search interviews...">
+      <select id="sortSelect" class="sort-select">
+        <option value="newest">Newest First</option>
+        <option value="oldest">Oldest First</option>
+        <option value="highest">Highest Grade</option>
+        <option value="lowest">Lowest Grade</option>
+      </select>
+    </div>
+
+    <div id="interviewGrid" class="interview-grid">
+      <p class="no-data">No interviews yet. Complete some practice interviews to see them here!</p>
+    </div>
+
+    <div class="actions">
+      <button id="clearBtn" class="danger-btn">Clear All History</button>
+    </div>
+  </div>
+
+  <!-- Interview Detail Modal -->
+  <div id="detailModal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <button class="close-btn" id="closeModal">&times;</button>
+      <div id="modalBody"></div>
+    </div>
+  </div>
+
+  <script src="history.js"></script>
+</body>
+</html>

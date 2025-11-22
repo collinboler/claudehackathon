@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interview Practice - Settings</title>
+  <link rel="stylesheet" href="settings.css">
+</head>
+<body>
+  <div class="container">
+    <h1>Interview Practice Assistant - Settings</h1>
+
+    <section class="settings-section">
+      <h2>API Keys</h2>
+      <div class="form-group">
+        <label for="openaiKey">OpenAI API Key (for Whisper transcription)</label>
+        <input type="password" id="openaiKey" placeholder="sk-...">
+      </div>
+      <div class="form-group">
+        <label for="claudeKey">Claude API Key (for grading)</label>
+        <input type="password" id="claudeKey" placeholder="sk-ant-...">
+      </div>
+    </section>
+
+    <section class="settings-section">
+      <h2>Resume</h2>
+      <div class="form-group">
+        <label for="resumeUpload">Upload Your Resume (Text or PDF)</label>
+        <input type="file" id="resumeUpload" accept=".txt,.pdf">
+        <div id="resumeStatus" class="status-text"></div>
+      </div>
+      <div class="form-group">
+        <label for="resumeText">Resume Content</label>
+        <textarea id="resumeText" rows="10" placeholder="Your resume will appear here..."></textarea>
+      </div>
+    </section>
+
+    <section class="settings-section">
+      <h2>Job Target</h2>
+      <div class="form-group">
+        <label for="jobRole">What job are you interviewing for?</label>
+        <select id="jobRole">
+          <option value="">Select a role...</option>
+          <option value="Software Engineer">Software Engineer</option>
+          <option value="Product Manager">Product Manager</option>
+          <option value="Data Scientist">Data Scientist</option>
+          <option value="UX Designer">UX Designer</option>
+          <option value="Marketing Manager">Marketing Manager</option>
+          <option value="Sales Representative">Sales Representative</option>
+          <option value="Custom">Custom Role...</option>
+        </select>
+      </div>
+      <div class="form-group" id="customRoleGroup" style="display: none;">
+        <label for="customRole">Custom Role</label>
+        <input type="text" id="customRole" placeholder="Enter your role...">
+      </div>
+    </section>
+
+    <section class="settings-section">
+      <h2>Practice Intensity</h2>
+      <div class="form-group">
+        <label for="practiceLevel">How much do you want to practice?</label>
+        <select id="practiceLevel">
+          <option value="light">Light (1 question per 5 visits)</option>
+          <option value="medium" selected>Medium (1 question per 3 visits)</option>
+          <option value="heavy">Heavy (1 question per visit)</option>
+          <option value="intense">Intense (2 questions per visit)</option>
+        </select>
+      </div>
+    </section>
+
+    <section class="settings-section">
+      <h2>Grading Mode</h2>
+      <div class="form-group">
+        <label for="gradingMode">How should free browsing time be determined?</label>
+        <select id="gradingMode">
+          <option value="classic">Classic - Fixed cooldown period</option>
+          <option value="earn-minutes">Earn Minutes - Based on performance</option>
+        </select>
+      </div>
+
+      <div id="classicModeSettings" class="mode-settings">
+        <div class="form-group">
+          <label for="cooldownMinutes">Cooldown Period (minutes)</label>
+          <input type="number" id="cooldownMinutes" min="1" max="120" value="30" placeholder="30">
+          <p class="help-text">After completing an interview, you can browse freely for this many minutes.</p>
+        </div>
+      </div>
+
+      <div id="earnMinutesSettings" class="mode-settings" style="display: none;">
+        <p class="help-text">Earn browsing time based on your interview performance. Adjust the difficulty slider to scale all thresholds:</p>
+        <div class="difficulty-control">
+          <label class="difficulty-label">
+            <span>Difficulty:</span>
+            <span class="difficulty-value" id="difficultyLabel">Balanced</span>
+          </label>
+          <div class="difficulty-slider-container">
+            <span class="difficulty-min">Easy</span>
+            <input type="range" id="difficultySlider" min="1" max="5" step="1" value="3">
+            <span class="difficulty-max">Hard</span>
+          </div>
+        </div>
+        <div class="threshold-display">
+          <div class="threshold-preview">
+            <div class="preview-item">
+              <span class="preview-label">Poor (0-39):</span>
+              <span class="preview-value" id="poorMinutesValue">0.5</span> min
+            </div>
+            <div class="preview-item">
+              <span class="preview-label">Fair (40-59):</span>
+              <span class="preview-value" id="fairMinutesValue">1</span> min
+            </div>
+            <div class="preview-item">
+              <span class="preview-label">Good (60-79):</span>
+              <span class="preview-value" id="goodMinutesValue">3</span> min
+            </div>
+            <div class="preview-item">
+              <span class="preview-label">Excellent (80-100):</span>
+              <span class="preview-value" id="excellentMinutesValue">5</span> min
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="settings-section">
+      <h2>Problem Sites</h2>
+      <div class="form-group">
+        <label>Sites that will trigger interview questions:</label>
+        <div id="problemSites">
+          <div class="site-item">
+            <input type="checkbox" id="site-youtube" value="youtube.com" checked>
+            <label for="site-youtube">youtube.com</label>
+          </div>
+          <div class="site-item">
+            <input type="checkbox" id="site-instagram" value="instagram.com" checked>
+            <label for="site-instagram">instagram.com</label>
+          </div>
+        </div>
+        <div class="add-site-group">
+          <input type="text" id="newSite" placeholder="Add new site (e.g., reddit.com)">
+          <button id="addSiteBtn">Add Site</button>
+        </div>
+      </div>
+    </section>
+
+    <div class="button-group">
+      <button id="saveBtn" class="primary-btn">Save Settings</button>
+      <button id="clearDataBtn" class="danger-btn">Clear All Data</button>
+    </div>
+  </div>
+
+  <script src="settings.js"></script>
+</body>
+</html>
