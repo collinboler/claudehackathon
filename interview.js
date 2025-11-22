@@ -205,89 +205,29 @@ async function handleClassicMode(questionData, settings, jobRole) {
 }
 
 async function handleEarnMinutesMode(questionData, settings) {
-  // First transcribe
-  document.getElementById('loadingText').textContent = 'Transcribing...';
+  // Start processing in background (transcribe + grade)
+  const jobRole = settings.jobRole === 'Custom' ? settings.customRole : settings.jobRole;
 
-  chrome.runtime.sendMessage(
-    { type: 'transcribe', audioBlob: questionData.audioBlob },
-    async (response) => {
-      if (response.error) {
-        document.getElementById('loadingSection').style.display = 'none';
-        document.getElementById('statusMessage').textContent = `Error: ${response.error}`;
-        return;
+  chrome.runtime.sendMessage({
+    type: 'processEarnMinutesInterview',
+    data: {
+      question: questionData.question,
+      audioBlob: questionData.audioBlob,
+      resume: settings.resumeText,
+      jobRole: jobRole,
+      earnMinutesThresholds: settings.earnMinutesThresholds || {
+        poor: 1,
+        fair: 2,
+        good: 4,
+        excellent: 7
       }
-
-      const transcription = response.transcription;
-
-      // Quick grade with Haiku
-      document.getElementById('loadingText').textContent = 'Grading performance...';
-
-      chrome.runtime.sendMessage(
-        {
-          type: 'quickGradeHaiku',
-          data: {
-            question: questionData.question,
-            response: transcription
-          }
-        },
-        async (gradeResponse) => {
-          if (gradeResponse.error) {
-            document.getElementById('loadingSection').style.display = 'none';
-            document.getElementById('statusMessage').textContent = `Error: ${gradeResponse.error}`;
-            return;
-          }
-
-          const { quickGrade } = gradeResponse;
-          const thresholds = settings.earnMinutesThresholds || {
-            poor: 0.5,
-            fair: 1,
-            good: 3,
-            excellent: 5
-          };
-
-          // Determine earned minutes based on category
-          let earnedMinutes = thresholds[quickGrade.category];
-
-          // Set cooldown
-          const cooldownUntil = Date.now() + (earnedMinutes * 60 * 1000);
-          await chrome.storage.local.set({ cooldownUntil });
-
-          // Hide loading
-          document.getElementById('loadingSection').style.display = 'none';
-
-          // Show notification via content script
-          chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-            if (tabs[0]) {
-              chrome.tabs.sendMessage(tabs[0].id, {
-                type: 'showGradeNotification',
-                data: {
-                  category: quickGrade.category,
-                  grade: quickGrade.grade,
-                  earnedMinutes: earnedMinutes
-                }
-              });
-            }
-          });
-
-          // Show action buttons with earned minutes
-          document.getElementById('statusMessage').textContent = `${quickGrade.feedback} You earned ${earnedMinutes} ${earnedMinutes === 1 ? 'minute' : 'minutes'}!`;
-          showActionButtons(earnedMinutes);
-
-          // Start full detailed grading in background for history
-          const jobRole = settings.jobRole === 'Custom' ? settings.customRole : settings.jobRole;
-          chrome.runtime.sendMessage({
-            type: 'processInterview',
-            data: {
-              question: questionData.question,
-              audioBlob: questionData.audioBlob,
-              resume: settings.resumeText,
-              jobRole: jobRole
-            }
-          });
-        }
-      );
     }
-  );
+  });
+
+  // Redirect immediately
+  document.getElementById('loadingSection').style.display = 'none';
+  document.getElementById('statusMessage').textContent = 'Processing your response...';
+  window.location.href = redirectUrl;
 }
 
 function showActionButtons(minutes) {

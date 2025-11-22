@@ -103,6 +103,9 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   } else if (message.type === 'quickGradeHaiku') {
     quickGradeWithHaiku(message.data, sendResponse);
     return true; // Will respond asynchronously
+  } else if (message.type === 'processEarnMinutesInterview') {
+    processEarnMinutesInterview(message.data);
+    sendResponse({ success: true });
   }
 });
 
@@ -326,7 +329,7 @@ Return ONLY a JSON array of question strings, nothing else. Example format:
         'anthropic-dangerous-direct-browser-access': 'true'
       },
       body: JSON.stringify({
-        model: 'claude-haiku-4-5-20250929',
+        model: 'claude-haiku-4-5',
         max_tokens: 1000,
         messages: [{
           role: 'user',
@@ -363,6 +366,98 @@ Return ONLY a JSON array of question strings, nothing else. Example format:
   } catch (error) {
     console.error('Question generation error:', error);
     sendResponse({ error: error.message });
+  }
+}
+
+async function processEarnMinutesInterview(data) {
+  try {
+    console.log('Processing earn-minutes interview in background...');
+
+    // Step 1: Transcribe
+    const transcriptionResult = await new Promise((resolve) => {
+      handleTranscription(data.audioBlob, resolve);
+    });
+
+    if (transcriptionResult.error) {
+      console.error('Background transcription failed:', transcriptionResult.error);
+      return;
+    }
+
+    const transcription = transcriptionResult.transcription;
+    console.log('Transcription complete:', transcription);
+
+    // Step 2: Quick grade with Haiku
+    const gradeResult = await new Promise((resolve) => {
+      quickGradeWithHaiku({
+        question: data.question,
+        response: transcription
+      }, resolve);
+    });
+
+    if (gradeResult.error) {
+      console.error('Background quick grading failed:', gradeResult.error);
+      return;
+    }
+
+    const { quickGrade } = gradeResult;
+    const thresholds = data.earnMinutesThresholds;
+
+    // Determine earned minutes based on category
+    let earnedMinutes = thresholds[quickGrade.category];
+
+    // Set cooldown
+    const cooldownUntil = Date.now() + (earnedMinutes * 60 * 1000);
+    await chrome.storage.local.set({ cooldownUntil });
+
+    console.log('Quick grading complete:', quickGrade, 'Earned:', earnedMinutes, 'minutes');
+
+    // Step 3: Show notification on the website
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      if (tabs[0]) {
+        chrome.tabs.sendMessage(tabs[0].id, {
+          type: 'showGradeNotification',
+          data: {
+            category: quickGrade.category,
+            grade: quickGrade.grade,
+            earnedMinutes: earnedMinutes,
+            feedback: quickGrade.feedback
+          }
+        }).catch(err => {
+          console.log('Could not send notification to tab:', err);
+        });
+      }
+    });
+
+    // Step 4: Start full detailed grading in background for history
+    handleGrading({
+      question: data.question,
+      response: transcription,
+      resume: data.resume,
+      jobRole: data.jobRole
+    }, (gradingResult) => {
+      if (gradingResult.error) {
+        console.error('Background detailed grading failed:', gradingResult.error);
+        return;
+      }
+
+      // Save to storage
+      chrome.storage.local.get(['interviews'], (storageData) => {
+        const interviews = storageData.interviews || [];
+
+        interviews.push({
+          question: data.question,
+          response: transcription,
+          grading: gradingResult.grading,
+          timestamp: Date.now()
+        });
+
+        chrome.storage.local.set({ interviews });
+        console.log('Interview saved successfully');
+      });
+    });
+
+  } catch (error) {
+    console.error('Earn-minutes processing error:', error);
   }
 }
 
@@ -404,7 +499,7 @@ Grade ranges:
         'anthropic-dangerous-direct-browser-access': 'true'
       },
       body: JSON.stringify({
-        model: 'claude-haiku-4-5-20250929',
+        model: 'claude-haiku-4-5',
         max_tokens: 500,
         messages: [{
           role: 'user',

@@ -104,22 +104,27 @@
           <div class="threshold-preview">
             <div class="preview-item">
               <span class="preview-label">Poor (0-39):</span>
-              <span class="preview-value" id="poorMinutesValue">0.5</span> min
+              <span class="preview-value" id="poorMinutesValue">1</span> min
             </div>
             <div class="preview-item">
               <span class="preview-label">Fair (40-59):</span>
-              <span class="preview-value" id="fairMinutesValue">1</span> min
+              <span class="preview-value" id="fairMinutesValue">2</span> min
             </div>
             <div class="preview-item">
               <span class="preview-label">Good (60-79):</span>
-              <span class="preview-value" id="goodMinutesValue">3</span> min
+              <span class="preview-value" id="goodMinutesValue">4</span> min
             </div>
             <div class="preview-item">
               <span class="preview-label">Excellent (80-100):</span>
-              <span class="preview-value" id="excellentMinutesValue">5</span> min
+              <span class="preview-value" id="excellentMinutesValue">7</span> min
             </div>
           </div>
         </div>
+        <!-- Hidden inputs to store calculated values -->
+        <input type="hidden" id="poorMinutes" value="1">
+        <input type="hidden" id="fairMinutes" value="2">
+        <input type="hidden" id="goodMinutes" value="4">
+        <input type="hidden" id="excellentMinutes" value="7">
       </div>
     </section>
 

@@ -159,6 +159,7 @@ function setupEventListeners() {
       practiceLevel: document.getElementById('practiceLevel').value,
       cooldownMinutes: parseInt(document.getElementById('cooldownMinutes').value) || 30,
       gradingMode: document.getElementById('gradingMode').value,
+      difficultyLevel: parseInt(document.getElementById('difficultySlider').value) || 3,
       earnMinutesThresholds: {
         poor: parseFloat(document.getElementById('poorMinutes').value),
         fair: parseFloat(document.getElementById('fairMinutes').value),
@@ -214,6 +215,34 @@ function toggleGradingMode(mode) {
     classicSettings.style.display = 'none';
     earnSettings.style.display = 'block';
   }
+}
+
+function updateDifficultyDisplay(level) {
+  // Difficulty presets: 1=Easy, 2=Easier, 3=Balanced, 4=Harder, 5=Hard
+  const presets = {
+    1: { poor: 2, fair: 4, good: 8, excellent: 15, label: 'Easy' },
+    2: { poor: 1.5, fair: 3, good: 6, excellent: 10, label: 'Easier' },
+    3: { poor: 1, fair: 2, good: 4, excellent: 7, label: 'Balanced' },
+    4: { poor: 0.5, fair: 1, good: 2, excellent: 4, label: 'Harder' },
+    5: { poor: 0.25, fair: 0.5, good: 1, excellent: 2, label: 'Hard' }
+  };
+
+  const preset = presets[level];
+
+  // Update label
+  document.getElementById('difficultyLabel').textContent = preset.label;
+
+  // Update preview values
+  document.getElementById('poorMinutesValue').textContent = preset.poor;
+  document.getElementById('fairMinutesValue').textContent = preset.fair;
+  document.getElementById('goodMinutesValue').textContent = preset.good;
+  document.getElementById('excellentMinutesValue').textContent = preset.excellent;
+
+  // Store hidden inputs for saving
+  document.getElementById('poorMinutes').value = preset.poor;
+  document.getElementById('fairMinutes').value = preset.fair;
+  document.getElementById('goodMinutes').value = preset.good;
+  document.getElementById('excellentMinutes').value = preset.excellent;
 }
 
 async function generateResumeQuestions(resumeText) {
