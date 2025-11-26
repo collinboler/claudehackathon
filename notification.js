@@ -36,6 +36,7 @@ function showNotification(data) {
     <div class="notification-body">
       <div class="notification-grade">Grade: ${grade}/100</div>
       <div class="notification-time">Earned: ${earnedMinutes} ${earnedMinutes === 1 ? 'minute' : 'minutes'}</div>
+      <button class="notification-review-btn" id="reviewNotificationBtn">Review Interview</button>
     </div>
   `;
 
@@ -140,12 +141,36 @@ function showNotification(data) {
         font-size: 16px;
         color: #667eea;
         font-weight: 600;
+        margin-bottom: 12px;
+      }
+
+      .notification-review-btn {
+        width: 100%;
+        padding: 10px;
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        color: white;
+        border: none;
+        border-radius: 6px;
+        font-size: 14px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: transform 0.2s;
+      }
+
+      .notification-review-btn:hover {
+        transform: translateY(-2px);
       }
     `;
     document.head.appendChild(styles);
   }
 
   document.body.appendChild(notification);
+
+  // Add click listener to review button
+  document.getElementById('reviewNotificationBtn').addEventListener('click', () => {
+    chrome.runtime.sendMessage({ type: 'openReviewPage' });
+    notification.remove();
+  });
 
   // Auto-remove after 8 seconds
   setTimeout(() => {

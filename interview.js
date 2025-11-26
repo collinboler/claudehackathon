@@ -197,6 +197,10 @@ async function handleClassicMode(questionData, settings, jobRole) {
     }
   });
 
+  // Set cooldown
+  const cooldownUntil = Date.now() + (cooldownMinutes * 60 * 1000);
+  await chrome.storage.local.set({ cooldownUntil });
+
   // Show action buttons
   document.getElementById('loadingSection').style.display = 'none';
   document.getElementById('statusMessage').textContent = `Your response is being processed. You can continue browsing for ${cooldownMinutes} minutes.`;
@@ -224,10 +228,16 @@ async function handleEarnMinutesMode(questionData, settings) {
     }
   });
 
-  // Redirect immediately
+  // Redirect immediately with flag
   document.getElementById('loadingSection').style.display = 'none';
   document.getElementById('statusMessage').textContent = 'Processing your response...';
-  window.location.href = redirectUrl;
+
+  chrome.runtime.sendMessage({
+    type: 'setInterviewCompleteFlag',
+    url: redirectUrl
+  }, () => {
+    window.location.href = redirectUrl;
+  });
 }
 
 function showActionButtons(minutes) {
@@ -242,7 +252,13 @@ function showActionButtons(minutes) {
   continueBtn.parentNode.replaceChild(newContinueBtn, continueBtn);
 
   newContinueBtn.addEventListener('click', () => {
-    window.location.href = redirectUrl;
+    // Send message to set flag before redirecting
+    chrome.runtime.sendMessage({
+      type: 'setInterviewCompleteFlag',
+      url: redirectUrl
+    }, () => {
+      window.location.href = redirectUrl;
+    });
   });
 
   // View analytics button

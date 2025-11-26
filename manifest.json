@@ -1,12 +1,13 @@
 {
   "manifest_version": 3,
-  "name": "Interview Practice Assistant",
+  "name": "Prep Pal",
   "version": "1.0.0",
   "description": "Practice behavioral interviews by answering questions before accessing distracting sites",
   "permissions": [
     "storage",
     "tabs",
-    "webNavigation"
+    "webNavigation",
+    "scripting"
   ],
   "host_permissions": [
     "<all_urls>"
@@ -37,7 +38,12 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["notification.js"],
+      "js": ["page-checker.js"],
+      "run_at": "document_start"
+    },
+    {
+      "matches": ["<all_urls>"],
+      "js": ["notification.js", "cooldown-monitor.js"],
       "run_at": "document_end"
     }
   ]

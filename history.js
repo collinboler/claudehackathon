@@ -7,6 +7,12 @@ document.addEventListener('DOMContentLoaded', async () => {
   await loadInterviews();
   setupEventListeners();
   displayInterviews();
+
+  // Check if we should open the latest interview
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('openLatest') === 'true' && filteredInterviews.length > 0) {
+    openInterview(0); // Open most recent (already sorted by newest first)
+  }
 });
 
 async function loadInterviews() {
@@ -111,25 +117,41 @@ function displayInterviews() {
         <div class="card-question">${questionPreview}</div>
         <div class="card-footer">
           <span class="card-time">${date.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}</span>
-          <button class="view-btn" onclick="openInterview(${index})">Review Interview</button>
+          <button class="view-btn" data-index="${index}">Review Interview</button>
         </div>
       </div>
     `;
   }).join('');
+
+  // Add click listeners to all view buttons
+  document.querySelectorAll('.view-btn').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      const index = parseInt(e.target.getAttribute('data-index'));
+      openInterview(index);
+    });
+  });
 }
 
 function openInterview(index) {
   const interview = filteredInterviews[index];
   const date = new Date(interview.timestamp);
-  const gradeClass = interview.grading.grade >= 70 ? 'grade-good' :
-                     interview.grading.grade >= 50 ? 'grade-medium' : 'grade-poor';
+
+  // Check if grading is complete (has feedback)
+  const isGradingComplete = interview.grading && interview.grading.feedback;
+
+  const gradeClass = isGradingComplete && interview.grading.grade >= 70 ? 'grade-good' :
+                     isGradingComplete && interview.grading.grade >= 50 ? 'grade-medium' : 'grade-poor';
 
   const modalBody = document.getElementById('modalBody');
   modalBody.innerHTML = `
     <div class="interview-detail">
       <div class="detail-header">
         <div class="detail-date">${date.toLocaleString()}</div>
-        <div class="grade-badge-large ${gradeClass}">${interview.grading.grade}/100</div>
+        ${isGradingComplete ? `
+          <div class="grade-badge-large ${gradeClass}">${interview.grading.grade}/100</div>
+        ` : `
+          <div class="grade-badge-large grade-pending">Grading...</div>
+        `}
       </div>
 
       <div class="detail-section">
@@ -139,31 +161,42 @@ function openInterview(index) {
 
       <div class="detail-section">
         <h2>Your Response</h2>
-        <p class="response-text">${interview.response}</p>
+        <p class="response-text">${interview.response || 'Transcribing...'}</p>
       </div>
 
-      <div class="detail-section">
-        <h2>Feedback</h2>
-        <p class="feedback-text">${interview.grading.feedback}</p>
-      </div>
-
-      ${interview.grading.strengths && interview.grading.strengths.length > 0 ? `
+      ${isGradingComplete ? `
         <div class="detail-section">
-          <h2>Strengths</h2>
-          <ul class="strengths-list">
-            ${interview.grading.strengths.map(s => `<li>${s}</li>`).join('')}
-          </ul>
+          <h2>Feedback</h2>
+          <p class="feedback-text">${interview.grading.feedback}</p>
         </div>
-      ` : ''}
 
-      ${interview.grading.improvements && interview.grading.improvements.length > 0 ? `
+        ${interview.grading.strengths && interview.grading.strengths.length > 0 ? `
+          <div class="detail-section">
+            <h2>Strengths</h2>
+            <ul class="strengths-list">
+              ${interview.grading.strengths.map(s => `<li>${s}</li>`).join('')}
+            </ul>
+          </div>
+        ` : ''}
+
+        ${interview.grading.improvements && interview.grading.improvements.length > 0 ? `
+          <div class="detail-section">
+            <h2>Areas for Improvement</h2>
+            <ul class="improvements-list">
+              ${interview.grading.improvements.map(i => `<li>${i}</li>`).join('')}
+            </ul>
+          </div>
+        ` : ''}
+      ` : `
         <div class="detail-section">
-          <h2>Areas for Improvement</h2>
-          <ul class="improvements-list">
-            ${interview.grading.improvements.map(i => `<li>${i}</li>`).join('')}
-          </ul>
+          <h2>Feedback</h2>
+          <div class="loading-feedback">
+            <div class="spinner"></div>
+            <p>Generating detailed feedback...</p>
+            <p class="loading-subtext">This may take a moment</p>
+          </div>
         </div>
-      ` : ''}
+      `}
     </div>
   `;
 
@@ -173,6 +206,3 @@ function openInterview(index) {
 function closeModal() {
   document.getElementById('detailModal').style.display = 'none';
 }
-
-// Make openInterview available globally
-window.openInterview = openInterview;

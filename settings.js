@@ -3,6 +3,7 @@
 document.addEventListener('DOMContentLoaded', async () => {
   await loadSettings();
   setupEventListeners();
+  setupCollapsibleSections();
 });
 
 async function loadSettings() {
@@ -12,7 +13,6 @@ async function loadSettings() {
     'resumeText',
     'jobRole',
     'customRole',
-    'practiceLevel',
     'cooldownMinutes',
     'gradingMode',
     'earnMinutesThresholds',
@@ -36,11 +36,6 @@ async function loadSettings() {
       document.getElementById('customRoleGroup').style.display = 'block';
       document.getElementById('customRole').value = data.customRole || '';
     }
-  }
-
-  // Load practice level
-  if (data.practiceLevel) {
-    document.getElementById('practiceLevel').value = data.practiceLevel;
   }
 
   // Load cooldown minutes
@@ -77,7 +72,7 @@ function renderProblemSites(sites) {
     siteItem.innerHTML = `
       <input type="checkbox" id="site-${site.id}" value="${site.value}" ${site.enabled ? 'checked' : ''}>
       <label for="site-${site.id}">${site.value}</label>
-      ${index >= 2 ? '<button class="remove-btn" data-site="' + site.id + '">×</button>' : ''}
+      <button class="remove-btn" data-site="${site.id}">×</button>
     `;
     container.appendChild(siteItem);
   });
@@ -156,7 +151,6 @@ function setupEventListeners() {
       resumeText: document.getElementById('resumeText').value,
       jobRole: document.getElementById('jobRole').value,
       customRole: document.getElementById('customRole').value,
-      practiceLevel: document.getElementById('practiceLevel').value,
       cooldownMinutes: parseInt(document.getElementById('cooldownMinutes').value) || 30,
       gradingMode: document.getElementById('gradingMode').value,
       difficultyLevel: parseInt(document.getElementById('difficultySlider').value) || 3,
@@ -243,6 +237,17 @@ function updateDifficultyDisplay(level) {
   document.getElementById('fairMinutes').value = preset.fair;
   document.getElementById('goodMinutes').value = preset.good;
   document.getElementById('excellentMinutes').value = preset.excellent;
+}
+
+function setupCollapsibleSections() {
+  const headers = document.querySelectorAll('.collapsible-header');
+  headers.forEach(header => {
+    header.addEventListener('click', () => {
+      header.classList.toggle('collapsed');
+      const content = header.nextElementSibling;
+      content.classList.toggle('collapsed');
+    });
+  });
 }
 
 async function generateResumeQuestions(resumeText) {

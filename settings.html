@@ -3,15 +3,19 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Interview Practice - Settings</title>
+  <title>Prep Pal - Settings</title>
   <link rel="stylesheet" href="settings.css">
 </head>
 <body>
   <div class="container">
-    <h1>Interview Practice Assistant - Settings</h1>
+    <h1>Prep Pal - Settings</h1>
 
     <section class="settings-section">
-      <h2>API Keys</h2>
+      <h2 class="collapsible-header">
+        API Keys
+        <span class="collapse-icon">^</span>
+      </h2>
+      <div class="collapsible-content">
       <div class="form-group">
         <label for="openaiKey">OpenAI API Key (for Whisper transcription)</label>
         <input type="password" id="openaiKey" placeholder="sk-...">
@@ -20,10 +24,15 @@
         <label for="claudeKey">Claude API Key (for grading)</label>
         <input type="password" id="claudeKey" placeholder="sk-ant-...">
       </div>
+      </div>
     </section>
 
     <section class="settings-section">
-      <h2>Resume</h2>
+      <h2 class="collapsible-header">
+        Resume
+        <span class="collapse-icon">^</span>
+      </h2>
+      <div class="collapsible-content">
       <div class="form-group">
         <label for="resumeUpload">Upload Your Resume (Text or PDF)</label>
         <input type="file" id="resumeUpload" accept=".txt,.pdf">
@@ -33,20 +42,24 @@
         <label for="resumeText">Resume Content</label>
         <textarea id="resumeText" rows="10" placeholder="Your resume will appear here..."></textarea>
       </div>
+      </div>
     </section>
 
     <section class="settings-section">
-      <h2>Job Target</h2>
+      <h2 class="collapsible-header">
+        Job Target
+        <span class="collapse-icon">^</span>
+      </h2>
+      <div class="collapsible-content">
       <div class="form-group">
         <label for="jobRole">What job are you interviewing for?</label>
         <select id="jobRole">
           <option value="">Select a role...</option>
-          <option value="Software Engineer">Software Engineer</option>
-          <option value="Product Manager">Product Manager</option>
-          <option value="Data Scientist">Data Scientist</option>
-          <option value="UX Designer">UX Designer</option>
-          <option value="Marketing Manager">Marketing Manager</option>
-          <option value="Sales Representative">Sales Representative</option>
+          <option value="Software Engineering">Software Engineering</option>
+          <option value="Investment Banking">Investment Banking</option>
+          <option value="Consulting">Consulting</option>
+          <option value="Quantitative Finance">Quantitative Finance</option>
+          <option value="Data Science">Data Science</option>
           <option value="Custom">Custom Role...</option>
         </select>
       </div>
@@ -54,23 +67,15 @@
         <label for="customRole">Custom Role</label>
         <input type="text" id="customRole" placeholder="Enter your role...">
       </div>
-    </section>
-
-    <section class="settings-section">
-      <h2>Practice Intensity</h2>
-      <div class="form-group">
-        <label for="practiceLevel">How much do you want to practice?</label>
-        <select id="practiceLevel">
-          <option value="light">Light (1 question per 5 visits)</option>
-          <option value="medium" selected>Medium (1 question per 3 visits)</option>
-          <option value="heavy">Heavy (1 question per visit)</option>
-          <option value="intense">Intense (2 questions per visit)</option>
-        </select>
       </div>
     </section>
 
     <section class="settings-section">
-      <h2>Grading Mode</h2>
+      <h2 class="collapsible-header">
+        Grading Mode
+        <span class="collapse-icon">^</span>
+      </h2>
+      <div class="collapsible-content">
       <div class="form-group">
         <label for="gradingMode">How should free browsing time be determined?</label>
         <select id="gradingMode">
@@ -126,10 +131,15 @@
         <input type="hidden" id="goodMinutes" value="4">
         <input type="hidden" id="excellentMinutes" value="7">
       </div>
+      </div>
     </section>
 
     <section class="settings-section">
-      <h2>Problem Sites</h2>
+      <h2 class="collapsible-header">
+        Problem Sites
+        <span class="collapse-icon">^</span>
+      </h2>
+      <div class="collapsible-content">
       <div class="form-group">
         <label>Sites that will trigger interview questions:</label>
         <div id="problemSites">
@@ -146,6 +156,7 @@
           <input type="text" id="newSite" placeholder="Add new site (e.g., reddit.com)">
           <button id="addSiteBtn">Add Site</button>
         </div>
+      </div>
       </div>
     </section>
 

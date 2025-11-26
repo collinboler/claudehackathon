@@ -5,7 +5,7 @@ Requires PIL/Pillow: pip install pillow
 """
 
 try:
-    from PIL import Image, ImageDraw
+    from PIL import Image, ImageDraw, ImageFont
 except ImportError:
     print("Please install Pillow: pip install pillow")
     exit(1)
@@ -15,38 +15,26 @@ def create_icon(size):
     img = Image.new('RGB', (size, size), color='#667eea')
     draw = ImageDraw.Draw(img)
 
-    # Draw a simple microphone icon
-    # Microphone capsule
-    mic_width = size // 4
-    mic_height = size // 3
-    mic_x = (size - mic_width) // 2
-    mic_y = size // 4
+    # Draw a large "P" letter
+    try:
+        # Try to use a bold font if available
+        font_size = int(size * 0.7)
+        font = ImageFont.truetype("/System/Library/Fonts/Helvetica.ttc", font_size)
+    except:
+        # Fallback to default font
+        font = ImageFont.load_default()
 
-    draw.ellipse(
-        [mic_x, mic_y, mic_x + mic_width, mic_y + mic_height],
-        fill='white'
-    )
+    # Draw the "P"
+    text = "P"
+    # Get text bbox for centering
+    bbox = draw.textbbox((0, 0), text, font=font)
+    text_width = bbox[2] - bbox[0]
+    text_height = bbox[3] - bbox[1]
 
-    # Microphone stand
-    stand_x = size // 2
-    stand_y = mic_y + mic_height
-    stand_height = size // 6
+    x = (size - text_width) // 2 - bbox[0]
+    y = (size - text_height) // 2 - bbox[1]
 
-    draw.line(
-        [stand_x, stand_y, stand_x, stand_y + stand_height],
-        fill='white',
-        width=max(2, size // 32)
-    )
-
-    # Microphone base
-    base_width = size // 5
-    base_y = stand_y + stand_height
-
-    draw.line(
-        [stand_x - base_width // 2, base_y, stand_x + base_width // 2, base_y],
-        fill='white',
-        width=max(2, size // 32)
-    )
+    draw.text((x, y), text, fill='white', font=font)
 
     return img
 

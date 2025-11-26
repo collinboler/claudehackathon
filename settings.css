@@ -35,6 +35,42 @@ h2 {
   padding-bottom: 10px;
 }
 
+.collapsible-header {
+  cursor: pointer;
+  user-select: none;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: color 0.3s;
+}
+
+.collapsible-header:hover {
+  color: #667eea;
+}
+
+.collapse-icon {
+  font-size: 18px;
+  font-weight: bold;
+  transition: transform 0.3s;
+  color: #667eea;
+}
+
+.collapsible-header.collapsed .collapse-icon {
+  transform: rotate(180deg);
+}
+
+.collapsible-content {
+  overflow: hidden;
+  transition: max-height 0.3s ease-out, opacity 0.3s ease-out;
+  max-height: 2000px;
+  opacity: 1;
+}
+
+.collapsible-content.collapsed {
+  max-height: 0;
+  opacity: 0;
+}
+
 .settings-section {
   margin-bottom: 40px;
 }

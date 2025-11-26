@@ -12,7 +12,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
 async function loadStatus() {
   const data = await chrome.storage.local.get([
-    'practiceLevel',
     'jobRole',
     'customRole',
     'problemSites',
@@ -30,10 +29,6 @@ async function loadStatus() {
   } else {
     document.getElementById('setupWarning').classList.add('hidden');
   }
-
-  // Update practice level
-  const practiceLevel = data.practiceLevel || 'medium';
-  document.getElementById('practiceLevel').textContent = practiceLevel.charAt(0).toUpperCase() + practiceLevel.slice(1);
 
   // Update job role
   const jobRole = data.jobRole === 'Custom' ? data.customRole : data.jobRole;
@@ -65,6 +60,19 @@ function setupEventListeners() {
 
   document.getElementById('viewHistoryBtn').addEventListener('click', () => {
     chrome.tabs.create({ url: chrome.runtime.getURL('history.html') });
+  });
+
+  document.getElementById('reviewLatestBtn').addEventListener('click', async () => {
+    const data = await chrome.storage.local.get(['interviews']);
+    const interviews = data.interviews || [];
+
+    if (interviews.length === 0) {
+      alert('No interviews to review yet!');
+      return;
+    }
+
+    // Open history page with query param to show latest
+    chrome.tabs.create({ url: chrome.runtime.getURL('history.html?openLatest=true') });
   });
 }
 

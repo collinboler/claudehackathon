@@ -45,6 +45,7 @@ chrome.webNavigation.onBeforeNavigate.addListener(async (details) => {
   // Check if this is a problem site
   const problemSites = data.problemSites || [];
   const isProblemSite = problemSites.some(site => {
+    if (!site.enabled) return false;
     const siteHostname = site.value.replace('www.', '');
     return hostname.includes(siteHostname) || siteHostname.includes(hostname);
   });
@@ -105,6 +106,28 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     return true; // Will respond asynchronously
   } else if (message.type === 'processEarnMinutesInterview') {
     processEarnMinutesInterview(message.data);
+    sendResponse({ success: true });
+  } else if (message.type === 'openReviewPage') {
+    chrome.tabs.create({ url: chrome.runtime.getURL('history.html?openLatest=true') });
+    sendResponse({ success: true });
+  } else if (message.type === 'setInterviewCompleteFlag') {
+    // Inject script to set sessionStorage flag on the target tab
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      if (tabs[0]) {
+        const targetUrl = new URL(message.url);
+        chrome.tabs.update(tabs[0].id, { url: message.url }, (tab) => {
+          // Inject the flag after navigation starts
+          chrome.scripting.executeScript({
+            target: { tabId: tab.id },
+            func: () => {
+              sessionStorage.setItem('preppal_interview_completed', 'true');
+            }
+          }).catch(() => {
+            // Ignore errors - script will run when page loads
+          });
+        });
+      }
+    });
     sendResponse({ success: true });
   }
 });
